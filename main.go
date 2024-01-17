@@ -17,7 +17,6 @@ func main() {
 	app.Post("/register", handlers.Register)
 
 	app.Use(middlewares.Protected())
-	app.Get("/test", handlers.TestHandler)
 
 	app.Listen(":3000")
 }
