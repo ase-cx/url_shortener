@@ -51,7 +51,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ghcr.io/ase-cx/url-shortener-backend:${{ steps.image-tag.outputs.tag }}, ghcr.io/ase-cx/url-shortener:latest
+          tags: ghcr.io/ase-cx/url-shortener-backend:${{ steps.image-tag.outputs.tag }}, ghcr.io/ase-cx/url-shortener-backend:latest
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
