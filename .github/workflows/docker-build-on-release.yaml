@@ -30,9 +30,9 @@ jobs:
         id: image-tag
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "::set-output name=tag::latest"
+            echo "::set-output name=tag::${{ steps.latest-tag.outputs.tag }}"
           else
-            echo "::set-output name=tag::${{ github.ref }}"
+            echo "::set-output name=tag::${{ github.ref_name }}"
           fi
       
       - name: Setup Docker Buildx
