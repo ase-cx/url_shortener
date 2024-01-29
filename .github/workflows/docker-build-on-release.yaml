@@ -23,18 +23,8 @@ jobs:
       - name: Get latest tag
         id: latest-tag
         run: |
-          echo "::set-output name=tag::$(git describe --tags --abbrev=0)"
-      
-
-      - name: Set image tag
-        id: image-tag
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "::set-output name=tag::${{ steps.latest-tag.outputs.tag }}"
-          else
-            echo "::set-output name=tag::${{ github.ref_name }}"
-          fi
-      
+          echo "::set-output name=tag::$(git describe --tags $(git rev-list --tags --max-count=1))"
+    
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -51,7 +41,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ghcr.io/ase-cx/url-shortener-backend:${{ steps.image-tag.outputs.tag }}, ghcr.io/ase-cx/url-shortener-backend:latest
+          tags: ghcr.io/ase-cx/url-shortener-backend:${{ steps.latest-tag.outputs.tag }}, ghcr.io/ase-cx/url-shortener-backend:latest
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
