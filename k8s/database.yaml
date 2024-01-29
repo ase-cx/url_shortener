@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-database
+  namespace: url-shortener
+spec:
+  serviceName: mongo-database
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mongo-database
+  template:
+    metadata:
+      labels:
+        app: mongo-database
+    spec:
+      containers:
+      - name: mongo-database
+        image: mongo
+        command:
+          - mongodW
+          - "--replSet"
+          - rs0
+          - "--bind_ip"
+          - "0.0.0.0"
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+          - name: mongo-peristent-storage
+            mountPath: /data/db
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-peristent-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "url-shortener-sc"
+      resources:
+        requests:
+          storage: 3Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service
+  namespace: url-shortener
+spec:
+  selector:
+    app: mongo-database
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+# mongodb://mongo-service.url-shortener.svc.cluster.local:27017
