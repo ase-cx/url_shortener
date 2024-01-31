@@ -13,6 +13,10 @@ func main() {
 
 	app := fiber.New()
 
+	app.Get("/test", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World 👋!")
+	})
+
 	app.Post("/login", handlers.Login)
 	app.Post("/register", handlers.Register)
 
@@ -21,5 +25,5 @@ func main() {
 	app.Use(middlewares.Protected())
 	app.Post("/shorten", handlers.Shorten)
 
-	app.Listen(":3000")
+	app.Listen("0.0.0.0:3000")
 }
