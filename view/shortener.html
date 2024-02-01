@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="gpt.css">
+</head>
+
+<body>
+
+    <h1>URL Shortener</h1>
+
+    <div id="urlContainer">
+        <input type="text" id="urlInput" placeholder="Enter your URL">
+        <br>
+        <button onclick="shortenUrl()" id="shortenBtn" class="btn">Shorten URL</button>
+        <button onclick="copyToClipboard()" id="copyBtn" class="btn">Copy URL</button>
+
+    </div>
+
+    <script>
+        function shortenUrl() {
+            // send the url ot /api/shorten
+
+            let url = document.getElementById("urlInput").value;
+            let data = { url: url };
+
+            fetch("/api/shorten", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            }).then(response => response.json())
+                .then(data => {
+                    document.getElementById("urlInput").value = data.shortUrl;
+                })
+
+
+        }
+
+        function copyToClipboard() {
+            var copyText = document.getElementById("urlInput");
+            copyText.select();
+            document.execCommand("copy");
+
+            // alert("Copied the URL: " + copyText.value);
+        }
+    </script>
+
+</body>
+
+</html>
