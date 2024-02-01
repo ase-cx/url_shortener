@@ -5,7 +5,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>URL Shortener</title>
-    <link rel="stylesheet" href="gpt.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+
+        #urlContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            max-width: 400px;
+            margin: auto;
+        }
+
+        #urlInput {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        #shortenBtn {
+            background-color: #4CAF50;
+            color: white;
+            order: 1;
+        }
+
+        #copyBtn {
+            background-color: #008CBA;
+            color: white;
+            order: 2;
+        }
+
+        #error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -27,7 +77,7 @@
             let url = document.getElementById("urlInput").value;
             let data = { url: url };
 
-            fetch("/api/shorten", {
+            fetch("/shorten", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
