@@ -10,33 +10,32 @@ import (
 func Shorten(c *fiber.Ctx) error {
     url := new(models.URL)
 
-    // Try to parse as JSON first
-    jsonParseErr := c.BodyParser(url)
-    
-    // If JSON parsing fails, attempt to read from form data
-    if jsonParseErr != nil {
+    contentType := c.Get("Content-Type")
+    if contentType == "application/json" {
+        // Parse body as JSON
+        if err := c.BodyParser(url); err != nil {
+            return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse JSON"})
+        }
+    } else if contentType == "application/x-www-form-urlencoded" {
+        // Parse form values
         url.Original = c.FormValue("original")
         url.Shorten = c.FormValue("shorten")
-        // Validate if required fields are populated
-        if url.Original == "" {
-            return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Original URL cannot be empty"})
-        }
+        // Additional form value parsing can go here
+    } else {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Unsupported Content-Type"})
     }
 
-    // if shorten is empty, generate new shorten
-    // TODO: Implement this for now just return error
+    // Continue with the rest of the function...
     if url.Shorten == "" {
         return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Shorten cannot be empty"})
     }
 
-    // Check if shorten already exists
     var foundURL models.URL
-    err := database.DB.Collection("urls").FindOne(c.Context(), bson.M{"shorten": url.Shorten}).Decode(&foundURL)
+    err := database.DB.Collection("urls").FindOne(c.Context(), fiber.Map{"shorten": url.Shorten}).Decode(&foundURL)
     if err == nil {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Shorten already exist"})
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Shorten already exists"})
     }
 
-    // Insert url into database
     _, err = database.DB.Collection("urls").InsertOne(c.Context(), url)
     if err != nil {
         return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
