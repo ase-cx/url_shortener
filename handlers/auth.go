@@ -13,8 +13,19 @@ import (
 
 func Register(c *fiber.Ctx) error {
 	user := new(models.User)
-	if err := c.BodyParser(user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse JSON"})
+
+	contentType := c.Get("Content-Type")
+	if contentType == "application/json" {
+		// Parse body as JSON
+		if err := c.BodyParser(user); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse JSON"})
+		}
+	} else if contentType == "application/x-www-form-urlencoded" {
+		// Parse form values
+		user.Username = c.FormValue("username")
+		user.Password = c.FormValue("password")
+	} else {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Unsupported Content-Type"})
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
@@ -34,8 +45,18 @@ func Register(c *fiber.Ctx) error {
 
 func Login(c *fiber.Ctx) error {
 	user := new(models.User)
-	if err := c.BodyParser(user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Cannot parse JSON"})
+
+	contentType := c.Get("Content-Type")
+	if contentType == "application/json" {
+		// Parse body as JSON
+		user.Username = c.FormValue("username")
+		user.Password = c.FormValue("password")
+	} else if contentType == "application/x-www-form-urlencoded" {
+		// Parse form values
+		user.Username = c.FormValue("username")
+		user.Password = c.FormValue("password")
+	} else {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Unsupported Content-Type"})
 	}
 
 	// Find user in database declared placeholder as User type
