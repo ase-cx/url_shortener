@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"runtime/debug"
 	"time"
 )
 
@@ -12,6 +14,15 @@ const (
 
 // GradientConverter converts a value from 0 to 100 to an RGB color gradient
 func GradientConverter(value int) (int, int, int) {
+	defer func() {
+		if r := recover(); r != nil {
+			moveCursorToBottom()
+			fmt.Println(r)
+			fmt.Println(string(debug.Stack()))
+			os.Exit(0)
+
+		}
+	}()
 	// Ensure value is within 0 to 100 range
 	if value < 0 {
 		value = 0
@@ -29,11 +40,10 @@ func GradientConverter(value int) (int, int, int) {
 		{0, 0, 255},   // Blue
 		{75, 0, 130},  // Indigo
 		{128, 0, 128}, // Violet
-		{0, 0, 0},     // Black
 	}
 
 	// Calculate the number of color segments
-	numSegments := len(colors) - 2
+	numSegments := len(colors) - 1
 	// Calculate the width of each segment
 	segmentWidth := width / float64(numSegments)
 
@@ -44,7 +54,7 @@ func GradientConverter(value int) (int, int, int) {
 
 	// Get the start and end colors for the current segment
 	startColor := colors[segment]
-	endColor := colors[segment+1]
+	endColor := colors[(segment+1)%numSegments]
 
 	// Interpolate between start and end colors
 	r := interpolate(startColor[0], endColor[0], positionInSegment)
