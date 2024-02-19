@@ -8,19 +8,29 @@
 		"ghcr.io/devcontainers/features/go:1": {
 			"version": "1.21"
 		}
-	}
+	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": [
+		8080
+	],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",
 
 	// Configure tool-specific properties.
-	// "customizations": {},
+	"customizations": {
+		"settings": {
+			"terminal.integrated.shell.linux": "/bin/bash"
+		},
+		"extensions": [
+			"GitHub.copilot",
+			"ms-vscode.go"
+		]
+	}
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
